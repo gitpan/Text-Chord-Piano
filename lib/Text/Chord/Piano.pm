@@ -7,7 +7,7 @@ use Carp qw(croak);
 use base qw(Class::Accessor::Fast);
 __PACKAGE__->mk_accessors( qw(finger) );
 
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = qv('0.0.2');
 
 my $base_chord_list = {
     'base'     => '0,4,7',
@@ -213,7 +213,7 @@ put keyboard by text
 
 =item finger($string)
 
-set/get finger text (default is '*')
+set/get finger position text (default is '*')
 
 =back
 
@@ -221,12 +221,11 @@ set/get finger text (default is '*')
 =head1 SEE ALSO
 
 GD::Chord::Piano
-http://coderepos.org/share/browser/lang/perl/GD-Chord-Piano/trunk
 
 
 =head1 AUTHOR
 
-Copyright (c) 2008, Dai Okabayashi C<< <genkivogue@ybb.ne.jp> >>
+Copyright (c) 2008, Dai Okabayashi C<< <bayashi@cpan.org> >>
 
 
 =head1 LICENCE

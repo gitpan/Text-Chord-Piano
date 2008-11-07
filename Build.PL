@@ -5,7 +5,7 @@ use Module::Build;
 my $builder = Module::Build->new(
     module_name         => 'Text::Chord::Piano',
     license             => 'perl',
-    dist_author         => 'Dai Okabayashi <genkivogue@ybb.ne.jp>',
+    dist_author         => 'Dai Okabayashi <bayashi@cpan.org>',
     dist_version_from   => 'lib/Text/Chord/Piano.pm',
     requires => {
         'Test::More'            => 0,

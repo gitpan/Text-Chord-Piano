@@ -1,8 +1,8 @@
 ---
 name: Text-Chord-Piano
-version: 0.0.1
+version: 0.0.2
 author:
-  - 'Dai Okabayashi <genkivogue@ybb.ne.jp>'
+  - 'Dai Okabayashi <bayashi@cpan.org>'
 abstract: This module is a chord table generator of Piano by the text
 license: perl
 resources:
@@ -15,7 +15,7 @@ requires:
 provides:
   Text::Chord::Piano:
     file: lib/Text/Chord/Piano.pm
-    version: 0.0.1
+    version: 0.0.2
 generated_by: Module::Build version 0.3
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
