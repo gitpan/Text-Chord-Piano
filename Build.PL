@@ -12,6 +12,7 @@ my $builder = Module::Build->new(
         'version'               => 0,
         'Carp'                  => 0,
         'Class::Accessor::Fast' => 0,
+        'Music::Chord::Note'    => '0.0.6',
     },
     add_to_cleanup      => [ 'Text-Chord-Piano-*' ],
 );

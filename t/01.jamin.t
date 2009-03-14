@@ -1,8 +1,18 @@
 use strict;
-use Test::More tests => 15;
+use Test::More tests => 18;
 use Text::Chord::Piano;
 
 my $p = Text::Chord::Piano->new;
+
+
+eval { $p->chord; };
+like($@, qr/no chord/, 'no chord');
+
+eval { $p->chord('H'); };
+like($@, qr/undefined chord/, 'undefined chord');
+
+eval { $p->chord('C#b9'); }; # C#-9
+like($@, qr/undefined kind of chord/, 'undefined kind of chord');
 
 
 is(
@@ -55,7 +65,7 @@ is(
     "C7"
 );
 is(
-    $p->gen('C7(9,13)', (0,4,7,10,14,17,21)),
+    $p->gen('C7(9,13)', (0,4,7,10,14,21)),
     $p->chord('C7(9,13)'),
     "C7(9,13)"
 );
@@ -80,13 +90,13 @@ is(
 );
 
 is(
-    $p->gen('B7(9,13)', (11,13,15,16,18,20,21)),
+    $p->gen('B7(9,13)', (11,15,18,21,13,20)),
     $p->chord('B7(9,13)'),
     "B7(9,13)"
 );
 
 
-is(37, scalar(@{$p->all_chords}), "all_chord");
+is(66, scalar(@{$p->all_chords}), "all_chord");
 
 is(
     $p->put_keyboard,

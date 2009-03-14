@@ -4,67 +4,14 @@ use warnings;
 use strict;
 use Carp qw(croak);
 
+use Music::Chord::Note;
+
 use base qw(Class::Accessor::Fast);
 __PACKAGE__->mk_accessors( qw(finger) );
 
-use version; our $VERSION = qv('0.0.2');
+use version; our $VERSION = qv('0.0.5');
 
-my $base_chord_list = {
-    'base'     => '0,4,7',
-    'b5'       => '0,4,6',
-    '6'        => '0,4,7,9',
-    '6(9)'     => '0,4,7,9,14',
-    'M7'       => '0,4,7,11',
-    'M7(9)'    => '0,4,7,11,14',
-    '7'        => '0,4,7,10',
-    '7(b5)'    => '0,4,6,10',
-    '7(b9)'    => '0,4,7,10,13',
-    '7(b9,13)' => '0,4,7,10,13,17,21',
-    '7(9)'     => '0,4,7,10,14',
-    '7(9,13)'  => '0,4,7,10,14,17,21',
-    '11'       => '0,4,7,10,14,17',
-    '7(#9)'    => '0,4,7,10,15',
-    '7(#11)'   => '0,4,7,10,18',
-    '7(b13)'   => '0,4,8,10',
-    '7(13)'    => '0,4,10,21',
-    'm'        => '0,3,7',
-    'm6'       => '0,3,7,9',
-    'm6(9)'    => '0,3,7,9',
-    'mM7'      => '0,3,7,11',
-    'm7'       => '0,3,7,10',
-    'm7(b5)'   => '0,3,6,10',
-    'm7(9)'    => '0,3,7,10,14',
-    'm7(9,11)' => '0,3,7,10,14,17',
-    'm13'      => '0,3,7,10,14,17,21',
-    'dim'      => '0,3,6',
-    'dim7'     => '0,3,6,9',
-    'aug'      => '0,4,8',
-    'aug7'     => '0,4,8,10',
-    'augM7'    => '0,4,8,11',
-    'aug9'     => '0,4,8,10,14',
-    'sus4'     => '0,5,7',
-    '7sus4'    => '0,5,7,10',
-    'add2'     => '0,2,4,7',
-    'add4'     => '0,4,5,7',
-    'add9'     => '0,4,7,14',
-};
-
-my $scalic_value = {
-    'C'  => 0,
-    'C#' => 1, 'Db' => 1,
-    'D'  => 2,
-    'D#' => 3, 'Eb' => 3,
-    'E'  => 4,
-    'E#' => 5, 'Fb' => 4, # joke!
-    'F'  => 5,
-    'F#' => 6, 'Gb' => 6,
-    'G'  => 7,
-    'G#' => 8, 'Ab' => 8,
-    'A'  => 9,
-    'A#' => 10, 'Bb' => 10,
-    'B'  => 11,
-    'Cb' => 11, 'B#' => 0, # joke!
-};
+my $cn = Music::Chord::Note->new();
 
 my $black_keys;
 for my $black_key (qw(1 3 6 8 10 13 15 18 20 22)){
@@ -72,9 +19,9 @@ for my $black_key (qw(1 3 6 8 10 13 15 18 20 22)){
 }
 
 my @white_keys = (
-#	C   C#  D   D#  E   F   F#  G   G#  A   A#  B
-	 2,  4,  6,  8, 10, 14, 16, 18, 20, 22, 24, 26,
-	30, 32, 34, 36, 38, 42, 44, 46, 48, 50, 52, 54,
+#   C   C#  D   D#  E   F   F#  G   G#  A   A#  B
+     2,  4,  6,  8, 10, 14, 16, 18, 20, 22, 24, 26,
+    30, 32, 34, 36, 38, 42, 44, 46, 48, 50, 52, 54,
 );
 
 
@@ -96,15 +43,15 @@ sub gen {
 }
 sub generate {
     my ($self, $chord_name, @keys) = @_;
-	my $keyboard = $self->_draw_keyboard;
+    my $keyboard = $self->_draw_keyboard;
     for my $key (0..23){
         my $play = 0;
         for my $i (@keys){
             $play = 1 if $i == $key;
         }
         if($play){
-			my $y = $black_keys->{$key} || 5;
-			$keyboard->[$y]->[$white_keys[$key]] = $self->finger;
+            my $y = $black_keys->{$key} || 5;
+            $keyboard->[$y]->[$white_keys[$key]] = $self->finger;
         }
     }
     return $self->put_keyboard($keyboard)."$chord_name\n";
@@ -112,32 +59,31 @@ sub generate {
 
 sub put_keyboard {
     my $self     = shift;
-	my $keyboard = shift;
-	$keyboard = $self->_draw_keyboard unless $keyboard;
-	my $text;
-	for my $line (@{$keyboard}){
-		for my $char (@{$line}){
-			$text .= $char;
-		}
-	}
-	return $text;
+    my $keyboard = shift;
+    $keyboard = $self->_draw_keyboard if ref $keyboard ne 'ARRAY';
+    my $text;
+    for my $line (@{$keyboard}){
+        for my $char (@{$line}){
+            $text .= $char;
+        }
+    }
+    return $text;
 }
 
 sub all_chords {
     my $self = shift;
-    return [keys %{$base_chord_list}];
+    return $cn->all_chords_list;
 }
 
 sub _get_keys {
     my ($self, $chord_name) = @_;
-    croak("no chord") unless $chord_name;
+    croak "no chord" unless $chord_name;
     my ($tonic, $kind) = ($chord_name =~ /([A-G][b#]?)(.+)?/);
     $kind = 'base' unless $kind;
-    my $scalic = $scalic_value->{$tonic};
-    croak("undefined chord $chord_name ($tonic)") unless defined $scalic;
-    croak("undefined chord $chord_name ($kind)") unless defined $base_chord_list->{$kind};
+    croak "undefined chord $chord_name" unless defined $tonic;
+    my $scalic = $cn->scale($tonic);
     my @keys;
-    for my $scale ( split(/\,/, $base_chord_list->{$kind}) ){
+    for my $scale ( $cn->chord_num($kind) ){
         my $tone = $scale + $scalic;
         $tone = int($tone % 24) + 12 if $tone > 23;
         push(@keys, $tone);
